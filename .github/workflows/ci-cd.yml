@@ -33,14 +33,10 @@ jobs:
             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: Send Gmail notification
-        if: always()
-        env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
-        run: |
-          echo "Subject: CI/CD Status\n\nGitHub Actions CI/CD Job finished with status: ${{ job.status }}" | \
-          sendmail -v -H "exec openssl s_client -quiet -connect smtp.gmail.com:465" \
-          -f "$GMAIL_USER" \
-          -au"$GMAIL_USER" -ap"$GMAIL_PASS" \
-          -t "$GMAIL_USER"
+	if: always()
+	env:
+	  GMAIL_USER: ${{ secrets.GMAIL_USER }}
+	  GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+	  JOB_STATUS: ${{ job.status }}
+	run: python gmail_notify.py
 
